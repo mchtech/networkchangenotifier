@@ -1,3 +1,5 @@
+//+build darwin
+
 package networkchangenotifier
 
 import (
@@ -71,8 +73,9 @@ func testAddDelIP() {
 		exec.Command("/bin/bash", "-c", "source /etc/profile && sudo ifconfig lo0 add 127.0.0.2/8 && sudo ifconfig lo0 delete 127.0.0.2").Run()
 	}
 }
-func testAddDelRoute() {
-	if runtime.GOOS == "darwin" {
-		exec.Command("/bin/bash", "-c", "source /etc/profile && sudo route -n add -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1 && sudo route -n delete -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1").Run()
-	}
-}
+
+// func testAddDelRoute() {
+// 	if runtime.GOOS == "darwin" {
+// 		exec.Command("/bin/bash", "-c", "source /etc/profile && sudo route -n add -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1 && sudo route -n delete -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1").Run()
+// 	}
+// }

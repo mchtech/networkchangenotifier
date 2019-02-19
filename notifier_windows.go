@@ -1,0 +1,29 @@
+//+build windows
+
+package networkchangenotifier
+
+// NetworkChangeNotifier is
+type NetworkChangeNotifier struct {
+}
+
+// Init will register and recv network change events
+func (c *NetworkChangeNotifier) Init() error {
+	return ncnInit()
+}
+
+// OnNetworkChanged will register user callback function
+func (c *NetworkChangeNotifier) OnNetworkChanged(f PIPFORWARD_CHANGE_CALLBACK) {
+	ncnRegisterCallback()
+	userCallback = f
+}
+
+// UnregisterCallback will unregister user callback function
+func (c *NetworkChangeNotifier) UnregisterCallback() {
+	ncnUnregisterCallback()
+	userCallback = nil
+}
+
+// Cleanup will cancel recv network change events
+func (c *NetworkChangeNotifier) Cleanup() error {
+	return ncnCleanup()
+}
