@@ -25,7 +25,7 @@ func TestCallbackAddDelIP(t *testing.T) {
 		testAddDelIP()
 	}()
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	err = ncn.Cleanup()
 	if err != nil {
 		t.Log(err)
@@ -43,11 +43,11 @@ func TestCallbackAddDelIP(t *testing.T) {
 // 	ncn.OnNetworkChanged(func(dataCFPropertyListRef uint64) {
 // 		t.Log("OnNetworkChanged", dataCFPropertyListRef)
 // 	})
-//  go func() {
-// 	    time.Sleep(1 * time.Second)
-// 	    testAddDelRoute()
-//  }()
-// 	time.Sleep(2 * time.Second)
+// 	go func() {
+// 		time.Sleep(1 * time.Second)
+// 		testAddDelRoute()
+// 	}()
+// 	time.Sleep(3 * time.Second)
 // 	err = ncn.Cleanup()
 // 	if err != nil {
 // 		t.Log(err)
@@ -71,7 +71,7 @@ func TestUnReg(t *testing.T) {
 		time.Sleep(1 * time.Second)
 		testAddDelIP()
 	}()
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 	err = ncn.Cleanup()
 	if err != nil {
 		t.Log(err)
@@ -86,7 +86,7 @@ func testAddDelIP() {
 }
 
 // func testAddDelRoute() {
-// 	if runtime.GOOS == "darwin" {
-// 		exec.Command("/bin/bash", "-c", "source /etc/profile && sudo route -n add -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1 && sudo route -n delete -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1").Run()
-// 	}
+// 	// if runtime.GOOS == "darwin" {
+// 	exec.Command("/bin/bash", "-c", "source /etc/profile && sudo route -n add -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1 && sudo route -n delete -net 127.0.0.2 -netmask 255.255.255.255 127.0.0.1").Run()
+// 	// }
 // }
