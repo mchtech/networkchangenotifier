@@ -12,7 +12,7 @@ func (c *NetworkChangeNotifier) Init() error {
 }
 
 // OnNetworkChanged will register user callback function
-func (c *NetworkChangeNotifier) OnNetworkChanged(f PIPFORWARD_CHANGE_CALLBACK) {
+func (c *NetworkChangeNotifier) OnNetworkChanged(f func(handleUIntPtr uint64)) {
 	ncnRegisterCallback()
 	userCallback = f
 }

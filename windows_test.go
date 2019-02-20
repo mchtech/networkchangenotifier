@@ -9,8 +9,6 @@ import (
 	"os/exec"
 	"testing"
 	"time"
-
-	"golang.org/x/sys/windows"
 )
 
 func TestCallbackAddDelIP(t *testing.T) {
@@ -20,9 +18,8 @@ func TestCallbackAddDelIP(t *testing.T) {
 		t.Log(err)
 		t.Fail()
 	}
-	ncn.OnNetworkChanged(func(CallerContext windows.Handle, Row windows.Handle, NotificationType int) uintptr {
+	ncn.OnNetworkChanged(func(HandleUIntPtr uint64) {
 		t.Log("OnNetworkChanged", Row)
-		return 0
 	})
 	go testAddDelIP()
 	time.Sleep(2 * time.Second)
@@ -40,9 +37,8 @@ func TestCallbackAddDelRoute(t *testing.T) {
 		t.Log(err)
 		t.Fail()
 	}
-	ncn.OnNetworkChanged(func(CallerContext windows.Handle, Row windows.Handle, NotificationType int) uintptr {
+	ncn.OnNetworkChanged(func(HandleUIntPtr uint64) {
 		t.Log("OnNetworkChanged", Row)
-		return 0
 	})
 	go testAddDelRoute()
 	time.Sleep(2 * time.Second)
@@ -60,10 +56,9 @@ func TestUnReg(t *testing.T) {
 		t.Log(err)
 		t.Fail()
 	}
-	ncn.OnNetworkChanged(func(CallerContext windows.Handle, Row windows.Handle, NotificationType int) uintptr {
+	ncn.OnNetworkChanged(func(HandleUIntPtr uint64) {
 		t.Log("OnNetworkChanged", Row)
 		t.Fail()
-		return 0
 	})
 	ncn.UnregisterCallback()
 	go testAddDelIP()

@@ -4,7 +4,7 @@ package networkchangenotifier
 
 import "C"
 
-var userCallback func(data uint64)
+var userCallback func(state uint64)
 
 //export callback_cgo
 func callback_cgo(state C.ulonglong, result C.uint) {
