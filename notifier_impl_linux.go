@@ -110,10 +110,12 @@ int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 }
 
 void regCallback(callback_t cb){
+   int ret = 0;
    callback = cb;
    readevent = true;
    while(readevent){
-      if (read_event(msg_handler) != 0) {
+      ret = read_event(msg_handler);
+      if (ret != 0 && ret != EAGAIN ) {
          break;
       }
    }
