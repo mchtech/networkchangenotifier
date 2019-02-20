@@ -14,9 +14,9 @@ func (c *NetworkChangeNotifier) Init() error {
 }
 
 // OnNetworkChanged will register user callback function
-func (c *NetworkChangeNotifier) OnNetworkChanged(f func(data uint64)) {
-	ncnRegisterCallback()
+func (c *NetworkChangeNotifier) OnNetworkChanged(f func(dataCFPropertyListRef uint64)) {
 	userCallback = f
+	ncnRegisterCallback()
 }
 
 // UnregisterCallback will unregister user callback function

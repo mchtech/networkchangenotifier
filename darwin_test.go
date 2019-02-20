@@ -4,7 +4,6 @@ package networkchangenotifier
 
 import (
 	"os/exec"
-	"runtime"
 	"testing"
 	"time"
 )
@@ -16,10 +15,16 @@ func TestCallbackAddDelIP(t *testing.T) {
 		t.Log(err)
 		t.Fail()
 	}
-	ncn.OnNetworkChanged(func(data uint64) {
-		t.Log("OnNetworkChanged", data)
+
+	ncn.OnNetworkChanged(func(dataCFPropertyListRef uint64) {
+		t.Log("OnNetworkChanged", dataCFPropertyListRef)
 	})
-	go testAddDelIP()
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		testAddDelIP()
+	}()
+
 	time.Sleep(2 * time.Second)
 	err = ncn.Cleanup()
 	if err != nil {
@@ -35,10 +40,13 @@ func TestCallbackAddDelIP(t *testing.T) {
 // 		t.Log(err)
 // 		t.Fail()
 // 	}
-// 	ncn.OnNetworkChanged(func(data uint64) {
-// 		t.Log("OnNetworkChanged", data)
+// 	ncn.OnNetworkChanged(func(dataCFPropertyListRef uint64) {
+// 		t.Log("OnNetworkChanged", dataCFPropertyListRef)
 // 	})
-// 	go testAddDelRoute()
+//  go func() {
+// 	    time.Sleep(1 * time.Second)
+// 	    testAddDelRoute()
+//  }()
 // 	time.Sleep(2 * time.Second)
 // 	err = ncn.Cleanup()
 // 	if err != nil {
@@ -54,12 +62,15 @@ func TestUnReg(t *testing.T) {
 		t.Log(err)
 		t.Fail()
 	}
-	ncn.OnNetworkChanged(func(data uint64) {
-		t.Log("OnNetworkChanged", data)
+	ncn.OnNetworkChanged(func(dataCFPropertyListRef uint64) {
+		t.Log("OnNetworkChanged", dataCFPropertyListRef)
 		t.Fail()
 	})
 	ncn.UnregisterCallback()
-	go testAddDelIP()
+	go func() {
+		time.Sleep(1 * time.Second)
+		testAddDelIP()
+	}()
 	time.Sleep(2 * time.Second)
 	err = ncn.Cleanup()
 	if err != nil {
@@ -69,9 +80,9 @@ func TestUnReg(t *testing.T) {
 }
 
 func testAddDelIP() {
-	if runtime.GOOS == "darwin" {
-		exec.Command("/bin/bash", "-c", "source /etc/profile && sudo ifconfig lo0 add 127.0.0.2/8 && sudo ifconfig lo0 delete 127.0.0.2").Run()
-	}
+	// if runtime.GOOS == "darwin" {
+	exec.Command("/bin/bash", "-c", "source /etc/profile && sudo ifconfig lo0 add 127.0.0.2/8 && sudo ifconfig lo0 delete 127.0.0.2").Run()
+	// }
 }
 
 // func testAddDelRoute() {
