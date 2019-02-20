@@ -13,6 +13,7 @@ package networkchangenotifier
 #include <netinet/in.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
+#include <time.h>
 
 extern void callback_cgo(uint64_t dataNLMSG);
 
@@ -36,14 +37,16 @@ int registerNetworkChangeEvent()
    addr.nl_pid = getpid();
    addr.nl_groups = RTMGRP_LINK|RTMGRP_IPV4_IFADDR|RTMGRP_IPV6_IFADDR|RTMGRP_IPV4_ROUTE|RTMGRP_IPV6_ROUTE;
 
-   int enable = 1;
-   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(enable));
+   struct timeval timeout;
+   timeout.tv_sec = 2;
+   timeout.tv_usec = 0;
+   setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(timeout));
 
    int res = bind(sock, (struct sockaddr *)&addr, sizeof(addr));
    if (res<0) {
       int err = errno;
       // bug
-      if (err != EADDRINUSE)
+      //if (err != EADDRINUSE)
       {
          shutdown(sock, SHUT_RDWR);
          close(sock);
@@ -130,6 +133,7 @@ int unregisterNetworkChangeEvent()
       err = errno;
    }
    sock = 0;
+   sleep(2);
    return err;
 }
 */
