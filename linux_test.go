@@ -23,6 +23,8 @@ func TestCallbackAddDelIP(t *testing.T) {
 	go func() {
 		time.Sleep(1 * time.Second)
 		testAddDelIP()
+		time.Sleep(1 * time.Second)
+		testAddDelIP()
 	}()
 
 	time.Sleep(3 * time.Second)
@@ -44,6 +46,8 @@ func TestCallbackAddDelRoute(t *testing.T) {
 		t.Log("OnNetworkChanged", dataNLMSG)
 	})
 	go func() {
+		time.Sleep(1 * time.Second)
+		testAddDelRoute()
 		time.Sleep(1 * time.Second)
 		testAddDelRoute()
 	}()
@@ -68,6 +72,8 @@ func TestUnReg(t *testing.T) {
 	})
 	ncn.UnregisterCallback()
 	go func() {
+		time.Sleep(1 * time.Second)
+		testAddDelIP()
 		time.Sleep(1 * time.Second)
 		testAddDelIP()
 	}()
