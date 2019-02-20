@@ -2,10 +2,6 @@
 
 package networkchangenotifier
 
-// NetworkChangeNotifier is
-type NetworkChangeNotifier struct {
-}
-
 // Init will register and recv network change events
 func (c *NetworkChangeNotifier) Init() error {
 	return ncnInit()
