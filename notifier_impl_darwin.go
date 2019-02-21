@@ -55,7 +55,10 @@ void DynamicStoreCallBack(SCDynamicStoreRef store, CFArrayRef changedKeys, void 
       callback((uint64_t)data);
    }
    pthread_mutex_unlock(&lock);
-   CFRelease(data);
+   if (data != NULL)
+   {
+      CFRelease(data);
+   }
 }
 
 int registerNetworkChangeEvent()
