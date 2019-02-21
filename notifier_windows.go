@@ -9,13 +9,17 @@ func (c *NetworkChangeNotifier) Init() error {
 
 // OnNetworkChanged will register user callback function
 func (c *NetworkChangeNotifier) OnNetworkChanged(f func(handleUIntPtr uint64)) {
-	ncnRegisterCallback()
+	userCallbackLock.Lock()
+	defer userCallbackLock.Unlock()
 	userCallback = f
+	ncnRegisterCallback()
 }
 
 // UnregisterCallback will unregister user callback function
 func (c *NetworkChangeNotifier) UnregisterCallback() {
 	ncnUnregisterCallback()
+	userCallbackLock.Lock()
+	defer userCallbackLock.Unlock()
 	userCallback = nil
 }
 

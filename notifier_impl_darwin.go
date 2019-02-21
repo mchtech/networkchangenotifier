@@ -5,6 +5,7 @@ package networkchangenotifier
 /*
 #cgo darwin LDFLAGS: -framework SystemConfiguration -framework CoreFoundation
 #include <stdint.h>
+#include <pthread.h>
 #include <SystemConfiguration/SCDynamicStore.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
@@ -14,10 +15,22 @@ typedef void (*callback_t)(uint64_t);
 
 callback_t callback;
 
+pthread_mutex_t lock;
+
 SCDynamicStoreRef store;
 
+void init(){
+   pthread_mutex_init(&lock, NULL);
+}
+
+void cleanup(){
+   pthread_mutex_destroy(&lock);
+}
+
 void regCallback(callback_t cb){
+   pthread_mutex_lock(&lock);
    callback = cb;
+   pthread_mutex_unlock(&lock);
 
    CFRunLoopSourceRef rlSrc = SCDynamicStoreCreateRunLoopSource(kCFAllocatorDefault, store, 0);
    CFRunLoopAddSource(CFRunLoopGetCurrent(), rlSrc, kCFRunLoopDefaultMode);
@@ -28,16 +41,20 @@ void regCallback(callback_t cb){
 
 void unregCallback(){
    CFRunLoopStop(CFRunLoopGetCurrent());
+   pthread_mutex_lock(&lock);
    callback = NULL;
+   pthread_mutex_unlock(&lock);
 }
 
 void DynamicStoreCallBack(SCDynamicStoreRef store, CFArrayRef changedKeys, void *info)
 {
    CFPropertyListRef data =  SCDynamicStoreCopyValue(store, (CFStringRef)CFArrayGetValueAtIndex(changedKeys, 0));
    // CFShow(data);
+   pthread_mutex_lock(&lock);
    if (callback != NULL){
       callback((uint64_t)data);
    }
+   pthread_mutex_unlock(&lock);
    CFRelease(data);
 }
 
@@ -81,6 +98,7 @@ import (
 
 func ncnInit() error {
 	var err error
+	C.init()
 	ret := int32(C.registerNetworkChangeEvent())
 	if ret != 0 {
 		return fmt.Errorf("registerNetworkChangeEvent failed, err code %d", ret)
@@ -98,6 +116,7 @@ func ncnUnregisterCallback() {
 
 func ncnCleanup() error {
 	var err error
+	defer C.cleanup()
 	ret := int32(C.unregisterNetworkChangeEvent())
 	if ret != 0 {
 		return fmt.Errorf("unregisterNetworkChangeEvent failed, err code %d", ret)

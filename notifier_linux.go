@@ -11,6 +11,8 @@ func (c *NetworkChangeNotifier) Init() error {
 
 // OnNetworkChanged will register user callback function
 func (c *NetworkChangeNotifier) OnNetworkChanged(f func(dataCFPropertyListRef uint64)) {
+	userCallbackLock.Lock()
+	defer userCallbackLock.Unlock()
 	userCallback = f
 	ncnRegisterCallback()
 }
@@ -18,6 +20,8 @@ func (c *NetworkChangeNotifier) OnNetworkChanged(f func(dataCFPropertyListRef ui
 // UnregisterCallback will unregister user callback function
 func (c *NetworkChangeNotifier) UnregisterCallback() {
 	ncnUnregisterCallback()
+	userCallbackLock.Lock()
+	defer userCallbackLock.Unlock()
 	userCallback = nil
 }
 
