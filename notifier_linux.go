@@ -27,5 +27,6 @@ func (c *NetworkChangeNotifier) UnregisterCallback() {
 
 // Cleanup will cancel recv network change events
 func (c *NetworkChangeNotifier) Cleanup() error {
+	c.UnregisterCallback()
 	return ncnCleanup()
 }

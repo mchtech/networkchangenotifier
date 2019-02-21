@@ -2,17 +2,20 @@
 
 package networkchangenotifier
 
-import "C"
-import "sync"
+import (
+	"sync"
+	"unsafe"
+
+	"github.com/vishvananda/netlink"
+)
 
 var userCallback func(dataNLMSG uint64)
 var userCallbackLock sync.RWMutex
 
-//export callback_cgo
-func callback_cgo(dataNLMSG C.ulonglong) {
+func callback_linux(dataNLMSG *netlink.RouteUpdate) {
 	userCallbackLock.RLock()
 	defer userCallbackLock.RUnlock()
 	if userCallback != nil {
-		userCallback(uint64(dataNLMSG))
+		userCallback(uint64(uintptr(unsafe.Pointer(dataNLMSG))))
 	}
 }
