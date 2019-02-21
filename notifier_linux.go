@@ -2,8 +2,6 @@
 
 package networkchangenotifier
 
-import "C"
-
 // Init will register and recv network change events
 func (c *NetworkChangeNotifier) Init() error {
 	return ncnInit()
