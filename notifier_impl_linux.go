@@ -14,12 +14,23 @@ package networkchangenotifier
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
 #include <time.h>
+#include <pthread.h>
 
 extern void callback_cgo(uint64_t dataNLMSG);
 
 typedef void (*callback_t)(uint64_t);
 
 callback_t callback;
+
+pthread_mutex_t lock;
+
+void init(){
+   pthread_mutex_init(&lock, NULL);
+}
+
+void cleanup(){
+   pthread_mutex_destroy(&lock);
+}
 
 int sock = 0;
 
@@ -35,7 +46,8 @@ int registerNetworkChangeEvent()
    }
    addr.nl_family = AF_NETLINK;
    addr.nl_pid = getpid();
-   addr.nl_groups = RTMGRP_LINK|RTMGRP_IPV4_IFADDR|RTMGRP_IPV6_IFADDR|RTMGRP_IPV4_ROUTE|RTMGRP_IPV6_ROUTE;
+   // addr.nl_groups = RTMGRP_LINK|RTMGRP_IPV4_IFADDR|RTMGRP_IPV6_IFADDR|RTMGRP_IPV4_ROUTE|RTMGRP_IPV6_ROUTE;
+   addr.nl_groups = RTMGRP_IPV4_ROUTE|RTMGRP_IPV6_ROUTE;
 
    struct timeval timeout;
    timeout.tv_sec = 2;
@@ -45,13 +57,8 @@ int registerNetworkChangeEvent()
    int res = bind(sock, (struct sockaddr *)&addr, sizeof(addr));
    if (res<0) {
       int err = errno;
-      // bug
-      //if (err != EADDRINUSE)
-      {
-         shutdown(sock, SHUT_RDWR);
-         close(sock);
-         return errno;
-      }
+      close(sock);
+      return errno;
    }
    return 0;
 }
@@ -103,16 +110,21 @@ int msg_handler(struct sockaddr_nl *nl, struct nlmsghdr *msg)
 {
    int type = msg->nlmsg_type;
    char* data = NLMSG_DATA(msg);
+   pthread_mutex_lock(&lock);
    if (callback != NULL) {
       callback((uint64_t)data);
    }
+   pthread_mutex_unlock(&lock);
    return 0;
 }
 
 void regCallback(callback_t cb){
    int ret = 0;
+   pthread_mutex_lock(&lock);
    callback = cb;
    readevent = true;
+   pthread_mutex_unlock(&lock);
+
    while(readevent){
       ret = read_event(msg_handler);
       if (ret != 0 && ret != EAGAIN ) {
@@ -122,8 +134,10 @@ void regCallback(callback_t cb){
 }
 
 void unregCallback(){
+   pthread_mutex_lock(&lock);
    readevent = false;
    callback = NULL;
+   pthread_mutex_unlock(&lock);
 }
 
 int unregisterNetworkChangeEvent()
@@ -148,6 +162,7 @@ import (
 
 func ncnInit() error {
 	var err error
+	C.init()
 	ret := int32(C.registerNetworkChangeEvent())
 	if ret != 0 {
 		return fmt.Errorf("registerNetworkChangeEvent failed, err code %d", ret)
@@ -165,6 +180,7 @@ func ncnUnregisterCallback() {
 
 func ncnCleanup() error {
 	var err error
+	defer C.cleanup()
 	ret := int32(C.unregisterNetworkChangeEvent())
 	if ret != 0 {
 		return fmt.Errorf("unregisterNetworkChangeEvent failed, err code %d", ret)
