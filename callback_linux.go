@@ -1,4 +1,4 @@
-//+build linux,cgo android,cgo
+//+build !windows,!darwin
 
 package networkchangenotifier
 
