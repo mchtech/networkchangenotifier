@@ -20,9 +20,9 @@ func callback_linux(dataNLMSG *netlink.RouteUpdate) {
 	if userCallback != nil {
 		userCallback(uint64(uintptr(unsafe.Pointer(dataNLMSG))))
 		if bt, err := json.Marshal(dataNLMSG); err == nil {
-			fmt.Println(string(bt))
+			fmt.Println("networkchange:", string(bt))
 		} else {
-			fmt.Println(err)
+			fmt.Println("networkchange:", err)
 		}
 	}
 }
