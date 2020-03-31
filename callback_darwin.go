@@ -3,7 +3,10 @@
 package networkchangenotifier
 
 import "C"
-import "sync"
+import (
+	"log"
+	"sync"
+)
 
 var userCallback func(dataCFPropertyListRef uint64)
 var userCallbackLock sync.RWMutex
@@ -14,5 +17,8 @@ func callback_cgo(dataCFPropertyListRef C.ulonglong) {
 	defer userCallbackLock.RUnlock()
 	if userCallback != nil {
 		userCallback(uint64(dataCFPropertyListRef))
+		if debugChange {
+			log.Println("networkchange:", dataCFPropertyListRef)
+		}
 	}
 }

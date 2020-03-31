@@ -3,6 +3,8 @@
 package networkchangenotifier
 
 import (
+	"encoding/json"
+	"log"
 	"sync"
 	"unsafe"
 
@@ -17,5 +19,14 @@ func callback_linux(dataNLMSG *netlink.RouteUpdate) {
 	defer userCallbackLock.RUnlock()
 	if userCallback != nil {
 		userCallback(uint64(uintptr(unsafe.Pointer(dataNLMSG))))
+		if bt, err := json.Marshal(dataNLMSG); err == nil {
+			if debugChange {
+				log.Println("networkchange:", string(bt))
+			}
+		} else {
+			if debugChange {
+				log.Println("networkchange:", err)
+			}
+		}
 	}
 }

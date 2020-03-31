@@ -3,9 +3,14 @@
 package networkchangenotifier
 
 import "C"
+import (
+	"os"
+	"strings"
+)
 
 // Init will register and recv network change events
 func (c *NetworkChangeNotifier) Init() error {
+	debugChange = strings.Contains(os.Getenv("GODEBUG"), "networkchange=1")
 	return ncnInit()
 }
 

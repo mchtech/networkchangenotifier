@@ -3,10 +3,15 @@
 package networkchangenotifier
 
 import (
+	"os"
 	"os/exec"
 	"testing"
 	"time"
 )
+
+func init() {
+	os.Setenv("GODEBUG", "networkchange=1")
+}
 
 func TestCallbackAddDelIP(t *testing.T) {
 	ncn := new(NetworkChangeNotifier)
