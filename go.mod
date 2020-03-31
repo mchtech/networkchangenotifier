@@ -1,9 +1,8 @@
 module github.com/mchtech/networkchangenotifier
 
-go 1.12
+go 1.14
 
 require (
-	github.com/vishvananda/netlink v1.0.0
-	github.com/vishvananda/netns v0.0.0-20190625233234-7109fa855b0f // indirect
-	golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a
+	github.com/vishvananda/netlink v1.1.0
+	golang.org/x/sys v0.0.0-20200331124033-c3d80250170d
 )

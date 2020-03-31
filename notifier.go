@@ -11,3 +11,5 @@ type INetworkChangeNotifier interface {
 // NetworkChangeNotifier is
 type NetworkChangeNotifier struct {
 }
+
+var debugChange bool

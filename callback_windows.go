@@ -3,6 +3,7 @@
 package networkchangenotifier
 
 import (
+	"log"
 	"sync"
 
 	"golang.org/x/sys/windows"
@@ -16,8 +17,10 @@ func callback_windows(CallerContext windows.Handle, Row windows.Handle, Notifica
 	userCallbackLock.RLock()
 	defer userCallbackLock.RUnlock()
 	if userCallback != nil {
-		// userCallback(CallerContext, Row, NotificationType)
 		userCallback(uint64(Row))
+		if debugChange {
+			log.Println("networkchange:", CallerContext, Row, NotificationType)
+		}
 	}
 	return uintptr(0)
 }

@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+func init() {
+	os.Setenv("GODEBUG", "networkchange=1")
+}
+
 func TestCallbackAddDelIP(t *testing.T) {
 	ncn := new(NetworkChangeNotifier)
 	err := ncn.Init()
